@@ -62,7 +62,7 @@ The plugin can be activated separately for each Redmine project. To do so, go to
 In order to use the Kanban Tool plugin, a user needs to have user role with the Kanban Tool permission. To give a user role the Kanban Tool permission, go to ``` Administration > Roles and permissions > [your_user_role] ``` and check the "Use Kanban Tool" box.
 
 #### 3.3 Creating a new Kanban Entry with Redmine
-Before you proceed, check that:
+**Before you proceed, check that:**
 - The current project you are in has the "Kanban Tool" module activated (see 3.1)
 - You are logged in with a user role that has the "Use Kanban Tool" permission (see 3.2)
 - Your user role is assigned to at least one board (see 2.4)
