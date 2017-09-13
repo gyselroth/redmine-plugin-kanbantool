@@ -74,7 +74,7 @@ In order to use the Kanban Tool plugin, a user needs to have a user role with th
 
 Third party acknowledgements
 ----------------------------
-This plugin is completely independent from kanbantool.com
+This plugin is completely independent from http://www.kanbantool.com
 
 Author and License
 ------------------
