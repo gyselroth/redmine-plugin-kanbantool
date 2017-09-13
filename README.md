@@ -4,8 +4,8 @@ Description
 -----------
 A Redmine plugin which connects kanbantool.com with Redmine by letting users choose to automatically add an entry into Kanban Tool when creating a new issue.
 
-Options
--------
+Features
+--------
  - Give permission to use the plugin to user roles and projects (as module)
  - Control the access to each Kanban board per user role
  - Hide stages/swimlanes
