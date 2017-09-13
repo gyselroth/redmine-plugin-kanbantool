@@ -1,3 +1,0 @@
-= kanbantool
-
-A Redmine plugin which connects kanbantool.com with Redmine by letting users choose to automatically add an entry into Kanban Tool when creating a new issue.
