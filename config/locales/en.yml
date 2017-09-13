@@ -1,0 +1,23 @@
+en:
+    kanban_project: Kanban board
+    project_module_kanbantool_module: Kanban Tool
+    permission_use_kanbantool: Use Kanban Tool
+    choose_project: Choose board
+    no_projects_found: No boards were found
+    invalid_token: API-Token/domain not valid
+    hide_fields: Hide input fields
+    kanban_stage: Kanban stage
+    choose_stage: Choose stage
+    no_stages_found: No stages were found
+    hide_stages: Hide stages
+    kanban_swimlane: Kanban swimlane
+    choose_swimlane: Choose swimlane
+    no_swimlanes_found: No swimlanes were found
+    hide_lanes: Hide swimlanes
+    kanban_subject: Kanban title
+    if_kanban_subject_empty: subject of Redmine is used if empty
+    if_kanban_subject_hidden: subject of Redmine is used if hidden
+    kanban_description: Kanban description
+    kanban_description_same: Use Redmine's description
+    board_user_role: User role for board access
+    add_permissions: Add Kanban Tool permission to a user role first  

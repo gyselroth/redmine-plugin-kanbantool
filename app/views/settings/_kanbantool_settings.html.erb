@@ -1,0 +1,252 @@
+<script type="text/javascript">
+jQuery(document).ready(function($){
+    $('.kanban_hide').on("change",function(){
+        var id_array = [];
+        var ids = '';
+        $('.kanban_hide').next('label').css({'text-decoration':'none','opacity':'1'});
+        $('.kanban_hide:checked').each(function(){
+            id_array.push($(this).val());
+            $(this).next('label').css({'text-decoration':'line-through','opacity':'0.85'});
+        });
+        ids = id_array.join(',');        
+        $('#settings_kanban_hide').val(ids);
+    });
+    $('.kanban_hide_lanes').on("change",function(){
+        var lane_id_array = [];
+        var lane_ids = '';
+        $('.kanban_hide_lanes').next('label').css({'text-decoration':'none','opacity':'1'});
+        $('.kanban_hide_lanes:checked').each(function(){
+            lane_id_array.push($(this).val());
+            $(this).next('label').css({'text-decoration':'line-through','opacity':'0.85'});
+        });
+        lane_ids = lane_id_array.join(',');        
+        $('#settings_kanban_hide_lanes').val(lane_ids);
+    });
+    $('.kanban_hide_fields').on('change', function(){
+        var field_id_array = [];
+        var field_ids = '';
+        $('.kanban_hide_fields').next('label').css({'text-decoration':'none','opacity':'1'});
+        $('.kanban_hide_fields:checked').each(function(){
+            field_id_array.push($(this).val());
+            $(this).next('label').css({'text-decoration':'line-through','opacity':'0.85'});
+        });
+        field_ids = field_id_array.join(',');        
+        $('#settings_kanban_hide_fields').val(field_ids);
+    });
+    $('.kanban_boards').on('change', function(){
+        var board_id_array = {};
+        var board_ids = ''
+        $('.kanban_boards_container').each(function(){
+            var board_id = $(this).attr('id');
+            board_id_array[board_id] = [];
+            $('#' + board_id + '.kanban_boards_container :checked').each(function(){
+                board_id_array[board_id].push($(this).val());
+            });
+        });
+        board_ids = JSON.stringify(board_id_array);
+        console.log(board_ids)
+        $('#settings_kanban_board_role').val(board_ids);
+    });
+});
+</script>
+<style type="text/css">
+table td {
+    padding: 8px;
+}
+td span {
+    font-weight: bold;
+}
+td label {
+    font-weight: normal !important;
+}
+</style><%
+require "open-uri"
+begin
+    require "nokogiri"
+rescue LoadError
+   %><h1 style="color:red">nokogiri library required. <a href="http://www.nokogiri.org/tutorials/installing_nokogiri.html" target="_blank">Please install to use this plugin</a></h1><%
+end
+%><div style="overflow-x:auto;width:100%"><table style="white-space:nowrap" cellspacing="0"><%
+boards = []
+invalid_token = ""
+begin
+    data = URI.parse("https://#{settings['kanban_domain']}.kanbantool.com/api/v1/boards.xml?api_token=#{settings['kanban_token']}").read
+    doc = Nokogiri::XML(data)
+    boards = []
+    %><tr><td></td> <%
+    counter = 0
+    notfirst = ""
+    doc.xpath("//board").each do |board|
+        board_name = board.at_xpath("name").content.strip
+        if counter != 0
+            notfirst = "border-left: 1px solid black;"
+        end
+        %><td style="border-bottom: 1px solid black;<%= notfirst %>padding:5px"><h3 style="margin-bottom:0px"><%= board_name %></h3></td><%
+        boards.push [board.at_xpath("id").content.strip,board_name]
+        counter += 1
+    end
+    %></tr>
+    <tr><td style="vertical-align:top"><span><%= l(:hide_stages) %>: </span><input type="text" id="settings_kanban_hide" name="settings[kanban_hide]" value="<%= settings['kanban_hide'] %>" style="display:none;"/></td><%
+    counter = 0
+    notfirst = ""
+    swimlanes = []
+    boards.each do |board|
+        board_id = board[0] 
+        board_name = board[1]
+        #stages[ID,Name]
+        stages = []
+        if counter != 0
+            notfirst = "border-left: 1px solid black;"
+        end
+        counter += 1
+        %><td style="<%= notfirst %>vertical-align:top"><%
+        data2 = URI.parse("https://#{settings['kanban_domain']}.kanbantool.com/api/v1/boards/#{board_id}.xml?api_token=#{settings['kanban_token']}").read
+        doc2 = Nokogiri::XML(data2)
+        doc2.xpath("//workflow-stage").each do |stage|
+            stages.push [stage.at_xpath("id").content.strip,stage.at_xpath("name").content.strip]
+            stages.each_with_index do |stage_sub,index|
+                if stage_sub[0] == stage.at_xpath("parent-id").content.strip
+                    stages.delete_at(index)
+                end
+            end
+        end
+        if !settings['kanban_hide'].nil?
+            kanban_hide = settings['kanban_hide'].split(',')
+        end
+        stages.each do |stage|
+            if stage[1] != "" && !stage[1].nil?
+                checked = ""
+                css_checked = ""
+                if !kanban_hide.nil?
+                    kanban_hide.each do |hide_id|
+                        if hide_id == stage[0]
+                            checked = 'checked="checked" '
+                            css_checked = 'text-decoration:line-through;opacity:0.85;'
+                            break
+                        end
+                    end
+                end
+                %><input type="checkbox" <%= checked %>id="<%= stage[0] %>" autocomplete="off" class="kanban_hide" value="<%= stage[0] %>" style="vertical-align:none"/>
+                <label for="<%= stage[0] %>" style="<%= css_checked %>float:none;margin-left:0px;"><%= stage[1] %></label><br><%
+            end
+        end
+        doc2.xpath('//swimlane').each do |swimlane|
+            swimlane_name = swimlane.at_xpath("name").content.strip
+            if swimlane_name != ""
+                swimlanes.push [swimlane.at_xpath("id").content.to_s.strip,swimlane_name,board_id]
+            end 
+        end
+        %></td><%
+    end
+    %></tr>
+    <tr><td style="vertical-align:top"><span><%= l(:hide_lanes) %>: </span><input type="text" id="settings_kanban_hide_lanes" name="settings[kanban_hide_lanes]" value="<%= settings['kanban_hide_lanes'] %>" style="display:none;"/></td><%
+    counter = 0 
+    notfirst = ""
+    boards.each do |board|
+        board_id = board[0] 
+        board_name = board[1]
+        #stages[ID,Name]
+        stages = []
+        if counter != 0
+            notfirst = "border-left: 1px solid black;"
+        end 
+        counter += 1
+        %><td style="<%= notfirst %>;border-top:1px solid black;vertical-align:top"><%
+        if !settings['kanban_hide_lanes'].nil?
+            kanban_hide_lanes = settings['kanban_hide_lanes'].split(',')
+        end 
+        swimlanes.each do |lane|
+            if lane[1] != "" && !lane[1].nil? && lane[2] == board_id
+                checked = ""
+                css_checked = ""
+                if !kanban_hide_lanes.nil?
+                    kanban_hide_lanes.each do |hide_id|
+                        if hide_id == lane[0]
+                            checked = 'checked="checked" '
+                            css_checked = 'text-decoration:line-through;opacity:0.85;'
+                            break
+                        end 
+                    end 
+                end 
+                %><input type="checkbox" <%= checked %>id="<%= lane[0] %>" autocomplete="off" class="kanban_hide_lanes" value="<%= lane[0] %>" style="vertical-align:none"/>
+                <label for="<%= lane[0] %>" style="<%= css_checked %>float:none;margin-left:0px;"><%= lane[1] %></label><br><%
+            end 
+        end
+        %></td><%
+    end
+    %></tr>
+    <tr><td style="vertical-align:top"><span><%= l(:board_user_role) %>: </span><input type="text" id="settings_kanban_board_role" name="settings[kanban_board_role]" value="<%= settings['kanban_board_role'] %>" style="display:none;"/></td><%
+    require_dependency "roles_controller"
+    if !settings['kanban_board_role'].nil? && settings['kanban_board_role'] != ""
+        kanban_board_role = JSON.parse(settings['kanban_board_role'])
+    end
+    counter = 0
+    counter2 = 0
+    notfirst = ""
+    roles_available = false
+    boards.each do |board|
+        if roles_available
+            %><td id="<%= board[0] %>" class="kanban_boards_container" style="border-left: 1px solid black;border-top:1px solid black;vertical-align:top"><%
+        end 
+        if counter != 0
+            notfirst = "border-left: 1px solid black;"
+        end
+        counter += 1
+        Role.all.each do |role|
+            if role.has_permission?(:use_kanbantool)
+                if counter2 == 0
+                    %><td id="<%= board[0] %>" class="kanban_boards_container" style="<%= notfirst %>border-top:1px solid black;vertical-align:top"><%
+                    roles_available = true
+                end
+                checked = ""
+                if !kanban_board_role.nil?
+                    if kanban_board_role[board[0]].include? role["id"].to_s
+                        checked = 'checked="checked" '
+                    end
+                end
+                %><input type="checkbox" class="kanban_boards" autocomplete="off" id="<%= board[0].to_s+role["id"].to_s %>" <%= checked %>value="<%= role["id"] %>" style="vertical-align:none"/>
+                <label for="<%= board[0].to_s+role["id"].to_s %>" style="float:none;margin-left:0px;"><%= role["name"] %></label><br><%    
+                counter2 += 1
+            end
+        end
+        if roles_available
+            %></td><%
+        end
+    end
+    if !roles_available
+        %><td colspan="<%= counter %>"><span style="color:red"><%= l(:add_permissions) %></span></td><%
+    end
+rescue Exception => e
+    logger.info e.inspect
+    if settings['kanban_token'] != ""
+        invalid_token = " "+l(:invalid_token)
+    end
+end
+%></tr>
+<tr><td><span>API Token: </span></td><td colspan="<%= counter %>"><input type="text" size="14" id="settings_kanban_token" name="settings[kanban_token]" value="<%= settings['kanban_token'] %>" /><span style="color:red"><%= invalid_token %></span></td></tr>
+<tr><td><span>Domain: </span></td><td colspan="<%= counter %>"><input type="text" size="14" style="text-align:right" id="settings_kanban_domain" name="settings[kanban_domain]" value="<%= settings['kanban_domain'] %>"><span style="vertical-align:middle;">.kanbantool.com</span></td></tr>
+<tr><td style="vertical-align:top"><span><%= l(:hide_fields) %>: </span></td><td colspan="<%= counter %>"><input type="text" id="settings_kanban_hide_fields" name="settings[kanban_hide_fields]" value="<%= settings['kanban_hide_fields'] %>" style="display:none;"/><%
+input_fields = ["kanban_stage","kanban_swimlane","kanban_subject","kanban_description"]
+if !settings['kanban_hide_fields'].nil?
+    kanban_hide_fields = settings['kanban_hide_fields'].split(',')
+end
+input_fields.each do |field|
+    checked = ""
+    css_checked = ""
+    if !kanban_hide_fields.nil?
+        kanban_hide_fields.each do |hidden_field|
+            if hidden_field == field
+                checked = 'checked="checked" '
+                css_checked = 'text-decoration:line-through;opacity:0.85;'
+                break
+            end
+        end
+    end
+    info = ""
+    if field == "kanban_subject"
+        info = " (" + l(:if_kanban_subject_hidden) + ")"
+    end
+    %><input type="checkbox" <%= checked %>id="<%= field %>" autocomplete="off" class="kanban_hide_fields" value="<%= field %>" style="vertical-align:none"/>
+    <label for="<%= field %>" style="<%= css_checked %>float:none;margin-left:0px;"><%= l(field) %></label><%= info %><br><%
+end
+%></td></tr></table></div>

@@ -1,0 +1,196 @@
+<%
+if User.current.allowed_to?(:use_kanbantool, @project)
+    %><script type="text/javascript">
+    jQuery(document).ready(function($){
+        var options_stage = $('select#kanban_stage option[value!="null"]').detach();
+        var options_swimlane = $('select#kanban_swimlane option[value!="null"]').detach();
+        $('select#kanban_project').on('change', function(){
+            id = $(this).val();
+            $('select#kanban_stage option[value!="null"]').remove();
+            $('select#kanban_swimlane option[value!="null"]').remove();
+            $('select#kanban_stage').append(options_stage);
+            $('select#kanban_swimlane').append(options_swimlane);
+            var options_swimlane_project = options_swimlane.clone();
+            $('select#kanban_stage option[value!="null"]').each(function(){
+                if(!$(this).hasClass(id))
+                     $(this).remove();
+            });
+            $('select#kanban_swimlane option[value!="null"]').each(function(){
+                if(!$(this).hasClass(id))
+                     $(this).remove();
+            });
+			if($('select#kanban_stage option').size() == 2){
+			    $('select#kanban_stage option:eq(1)').prop('selected',true);
+			}else{
+			    $('select#kanban_stage option:eq(0)').prop('selected',true);
+			}
+			if($('select#kanban_swimlane option').size() == 2){
+			    $('select#kanban_swimlane option:eq(1)').prop('selected',true);
+			}else{
+			    $('select#kanban_swimlane option:eq(0)').prop('selected',true);
+			}
+        });
+        $('#kanban_description_same').on('change', function(){
+            if(this.checked){
+                $('#kanban_description').prop('disabled',true);
+                $('#kanban_description').css({'opacity':'0.4'});
+            }else{
+                $('#kanban_description').prop('disabled',false);
+                $('#kanban_description').css({'opacity':'1'});
+            }
+        });
+    });
+    </script><%
+    require "open-uri"
+    begin
+    require "nokogiri"
+    rescue LoadError
+         %><h1 style="color:red">nokogiri library required. <a href="http://www.nokogiri.org/tutorials/installing_nokogiri.html" target="_blank">Please install to use this plugin</a></h1><%
+    end
+    %><div class="splitcontentleft">
+    <div style="min-width:350px" class="splitcontentleft">
+    <p><label for="kanban_project"><span><%= l(:kanban_project) %>:</span></label><%
+    if !Setting.plugin_kanbantool['kanban_hide_fields'].nil?
+        kanban_hide_fields = Setting.plugin_kanbantool['kanban_hide_fields'].split(',')
+    end
+    begin
+        data = URI.parse("https://#{Setting.plugin_kanbantool['kanban_domain']}.kanbantool.com/api/v1/boards.xml?api_token=#{Setting.plugin_kanbantool['kanban_token']}").read
+        doc = Nokogiri::XML(data)
+        counter = 0
+        counter2 = 0
+        counter3 = 0
+        #stages[ID,Name,Board ID]
+        stages = []
+        #swimlanes[ID,Name,Board ID]
+        swimlanes = []
+        redmine_url = request.protocol + request.host_with_port + request.fullpath
+        redmine_url.slice! 'projects/test/issues/new' %>
+        <input type="text" name="redmine_url" value="<%= redmine_url %>" style="display:none"/>
+        <select autocomplete="off" id="kanban_project" name="kanban_project">
+        <option selected="selected" value="null"><%= l(:choose_project) %></option><%
+        if !Setting.plugin_kanbantool['kanban_board_role'].nil? && Setting.plugin_kanbantool['kanban_board_role'] != ""
+             kanban_board_role = JSON.parse(Setting.plugin_kanbantool['kanban_board_role'])
+        end
+        doc.xpath('//board').each do |board|
+            skip = true
+            board_id = board.at_xpath("id").content.strip
+            if !kanban_board_role.nil?
+                if kanban_board_role[board_id]   
+                    User.current.roles_for_project(@project).each do |role|
+                        kanban_board_role[board_id].each do |board|
+                            if role["id"].to_s == board.to_s
+                                skip = false
+                                break;
+                            end
+                        end
+                        break if !skip
+                    end
+                end
+            end
+            if skip
+               next
+            end
+            counter += 1   
+            %><option value="<%= board_id %>"><%= board.at_xpath("name").content.strip %></option><%
+            data2 = URI.parse("https://#{Setting.plugin_kanbantool['kanban_domain']}.kanbantool.com/api/v1/boards/#{board_id}.xml?api_token=#{Setting.plugin_kanbantool['kanban_token']}").read
+            doc2 = Nokogiri::XML(data2)
+            doc2.xpath('//workflow-stage').each do |stage|    
+                stage_name = stage.at_xpath("name").content.strip
+                if stage_name != "" && !stage_name.nil?
+                    counter2 += 1
+                    stages.push [stage.at_xpath("id").content.strip,stage_name,board_id]
+                    parent_id = stage.at_xpath("parent-id").content.strip
+                    stages.each_with_index do |stage_sub,index|
+                        if stage_sub[0] == parent_id
+                            stages.delete_at(index)
+                        end
+                    end
+                end
+            end
+            doc2.xpath('//swimlane').each do |swimlane|
+                swimlane_name = swimlane.at_xpath("name").content.strip
+                if swimlane_name != ""
+                    counter3 += 1
+                    swimlanes.push [swimlane.at_xpath("id").content.strip,swimlane_name,board_id]
+                end
+            end
+        end
+        if counter == 0
+            %><option value="null"><%= l(:no_projects_found) %></option><%
+        end
+    rescue Exception => e
+        logger.info e.inspect
+        %><select id="kanban_project" style="color:red" name="kanban_project">
+        <option value="null"><%= l(:invalid_token) %></option><%
+    end
+    %></select></p><%
+    if !kanban_hide_fields.include? "kanban_stage"
+        %><p><label for="kanban_stage"><span><%= l(:kanban_stage) %>:</span></label>
+        <select autocomplete="off" id="kanban_stage" name="kanban_stage">
+        <option selected="selected" value="null"><%= l(:choose_stage) %></option><%
+        if !Setting.plugin_kanbantool['kanban_hide'].nil? 
+            kanban_hide = Setting.plugin_kanbantool['kanban_hide'].split(",") 
+        end
+        if !stages.nil?
+            stages.each do |stage|
+                show = true
+                if !kanban_hide.nil?
+                    kanban_hide.each do |hide_id|
+                        if hide_id == stage[0]
+                            show = false
+                            break   
+                        end
+                    end
+                end
+                if show && stage[0].to_s != ""
+                    %><option class="<%= stage[2] %>" value="<%= stage[0] %>"><%= stage[1] %></option><%  
+                end
+            end
+        end
+        if counter2 == 0
+            %><option value="null"><%= l(:no_stages_found) %></option><%
+        end
+        %></select></p><%
+    end
+    if !kanban_hide_fields.include? "kanban_swimlane"
+        %><p><label for="kanban_swimlane"><span><%= l(:kanban_swimlane) %>:</span></label>
+        <select autocomplete="off" id="kanban_swimlane" name="kanban_swimlane">
+        <option selected="selected" value="null"><%= l(:choose_swimlane) %></option><%
+        if !Setting.plugin_kanbantool['kanban_hide'].nil? 
+            kanban_hide_lanes = Setting.plugin_kanbantool['kanban_hide_lanes'].split(",") 
+        end
+        if !swimlanes.nil?
+            swimlanes.each do |swimlane|
+                show = true
+                if !kanban_hide_lanes.nil?
+                    kanban_hide_lanes.each do |hide_id|
+                        if hide_id == swimlane[0]
+                            show = false
+                            break   
+                        end 
+                    end 
+                end
+                if show && swimlane[0].to_s != ""
+                    %><option class="<%= swimlane[2] %>" value="<%= swimlane[0] %>"><%= swimlane[1] %></option><%
+                end
+            end 
+        end
+        if counter3 == 0
+            %><option value="null"><%= l(:no_swimlanes_found) %></option><%
+        end
+        %></select></p><%
+    end
+    %></div>
+    <div style="min-width:350px;float:left" class="splitcontentright"><%
+    if !kanban_hide_fields.include? "kanban_subject"
+        %><p><label for="kanban_subject"><span><%= l(:kanban_subject) %>:</span></label>
+        <input type="text" name="kanban_subject" size="35"/><br>(<%= l(:if_kanban_subject_empty) %>)</p><%
+    end
+    if !kanban_hide_fields.include? "kanban_description"
+        %><p><label for="kanban_description"><span><%= l(:kanban_description) %>:</span></label>
+        <textarea autocomplete="off" type="text" id="kanban_description" name="kanban_description" rows="3"></textarea><input style="vertical-align:top" autocomplete="off" id="kanban_description_same" type="checkbox" name="kanban_description_same"/><label for="kanban_description_same" style="float:none;margin:0px;font-weight:normal"><%= l(:kanban_description_same) %></label></p><%
+    end
+    %></div>
+    </div><%
+end
+%>

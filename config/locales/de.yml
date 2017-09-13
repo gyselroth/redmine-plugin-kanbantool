@@ -1,0 +1,23 @@
+de:
+    kanban_project: Kanban Board  
+    project_module_kanbantool_module: Kanban Tool
+    permission_use_kanbantool: Kanban Tool verwenden
+    choose_project: Board auswählen
+    no_projects_found: Keine Boards gefunden
+    invalid_token: API-Token/domain ungültig
+    hide_fields: Eingabefelder deaktivieren
+    kanban_stage: Kanban Stage
+    choose_stage: Stage auswählen
+    no_stages_found: Keine Stages gefunden
+    hide_stages: Stages deaktivieren
+    kanban_swimlane: Kanban Swimlane
+    choose_swimlane: Swimlane auswählen
+    no_swimlanes_found: Keine Swimlanes gefunden
+    hide_lanes: Swimlanes deaktivieren
+    kanban_subject: Kanban Titel
+    if_kanban_subject_empty: falls leer wird Redmine-Titel verwendet
+    if_kanban_subject_hidden: falls deaktiviert wird Redmine-Titel verwendet
+    kanban_description: Kanban Beschreibung
+    kanban_description_same: Von Redmine übernehmen
+    board_user_role: Benutzerrollen für Board-Zugang
+    add_permissions: Zuerst muss einer Benutzerrolle die Kanban Tool Berechtigung zugewiesen werden
