@@ -63,8 +63,8 @@ In order to use the Kanban Tool plugin, a user needs to have user role with the 
 
 #### 3.3 Creating a new Kanban Entry with Redmine
 **Before you proceed, check that:**
-- The current project you are in has the "Kanban Tool" module activated (see 3.1)
-- You are logged in with a user role that has the "Use Kanban Tool" permission (see 3.2)
+- The current project you are in has the ``` Kanban Tool ``` module activated (see 3.1)
+- You are logged in with a user role that has the ``` Use Kanban Tool ``` permission (see 3.2)
 - Your user role is assigned to at least one board (see 2.4)
 
 1. Go to the ``` New issue ``` page to create a new issue in Redmine
