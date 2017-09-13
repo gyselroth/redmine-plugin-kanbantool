@@ -72,6 +72,10 @@ In order to use the Kanban Tool plugin, a user needs to have a user role with th
 3. Select your Kanban options and enter/select data (depending on your settings)
 4. If no board is chosen, no Kanban entry will be created
 
+Third party acknowledgements
+----------------------------
+This plugin is completely independent from kanbantool.com
+
 Author and License
 ------------------
 Copyright 2017 gyselroth™ (http://www.gyselroth.com)
