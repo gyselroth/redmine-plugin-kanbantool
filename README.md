@@ -59,7 +59,7 @@ To hide an input field, follow the same procedure as 2.3.
 The plugin can be activated separately for each Redmine project. To do so, go to ``` Administration > Projects > [your_project] > Modules ``` and check ``` Kanban Tool ```.
 
 #### 3.2 Giving Kanban Tool Permission to User Roles
-In order to use the Kanban Tool plugin, a user needs to have user role with the Kanban Tool permission. To give a user role the Kanban Tool permission, go to ``` Administration > Roles and permissions > [your_user_role] ``` and check the ``` Use Kanban Tool ``` box.
+In order to use the Kanban Tool plugin, a user needs to have a user role with the ``` Use Kanban Tool ``` permission. To give a user role the ``` Use Kanban Tool ``` permission, go to ``` Administration > Roles and permissions > [your_user_role] ``` and check the ``` Use Kanban Tool ``` box.
 
 #### 3.3 Creating a new Kanban Entry with Redmine
 **Before you proceed, check that:**
