@@ -200,8 +200,10 @@ begin
                 end
                 checked = ""
                 if !kanban_board_role.nil?
-                    if kanban_board_role[board[0]].include? role["id"].to_s
-                        checked = 'checked="checked" '
+                    if !kanban_board_role[board[0]].nil?
+                        if kanban_board_role[board[0]].include? role["id"].to_s
+                            checked = 'checked="checked" '
+                        end
                     end
                 end
                 %><input type="checkbox" class="kanban_boards" autocomplete="off" id="<%= board[0].to_s+role["id"].to_s %>" <%= checked %>value="<%= role["id"] %>" style="vertical-align:none"/>
@@ -249,4 +251,20 @@ input_fields.each do |field|
     %><input type="checkbox" <%= checked %>id="<%= field %>" autocomplete="off" class="kanban_hide_fields" value="<%= field %>" style="vertical-align:none"/>
     <label for="<%= field %>" style="<%= css_checked %>float:none;margin-left:0px;"><%= l(field) %></label><%= info %><br><%
 end
-%></td></tr></table></div>
+%></td></tr>
+<tr><td style="max-width:250px"><span style="white-space:normal"><%= l(:custom_field_id) %>: </span></td><td colspan="<%= counter %>"><select autocomplete="off" name="settings[kanban_custom_field_id]" id="settings[kanban_custom_field_id]"><%
+selected = ""
+if settings['kanban_custom_field_id'].nil? || settings['kanban_custom_field_id'] == ""
+    selected = 'selected="selected" '
+end
+%><option value=""<%= selected %>><%= l(:choose_custom_field_id) %></option><%
+for i in 1..10
+    i_s = i.to_s
+    selected = ""
+    if settings['kanban_custom_field_id'] == i_s
+        selected = 'selected="selected" '
+    end
+    %><option value="<%= i_s %>"<%= selected %>><%= l(:custom_field) + " " + i_s %></option><%
+end
+%></select></td></tr>
+</table></div>

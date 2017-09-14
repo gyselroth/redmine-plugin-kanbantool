@@ -19,16 +19,16 @@ if User.current.allowed_to?(:use_kanbantool, @project)
                 if(!$(this).hasClass(id))
                      $(this).remove();
             });
-			if($('select#kanban_stage option').size() == 2){
-			    $('select#kanban_stage option:eq(1)').prop('selected',true);
-			}else{
-			    $('select#kanban_stage option:eq(0)').prop('selected',true);
-			}
-			if($('select#kanban_swimlane option').size() == 2){
-			    $('select#kanban_swimlane option:eq(1)').prop('selected',true);
-			}else{
-			    $('select#kanban_swimlane option:eq(0)').prop('selected',true);
-			}
+            if($('select#kanban_stage option').size() == 2){
+                $('select#kanban_stage option:eq(1)').prop('selected',true);
+            }else{
+                $('select#kanban_stage option:eq(0)').prop('selected',true);
+            }
+            if($('select#kanban_swimlane option').size() == 2){
+                $('select#kanban_swimlane option:eq(1)').prop('selected',true);
+            }else{
+                $('select#kanban_swimlane option:eq(0)').prop('selected',true);
+            }    
         });
         $('#kanban_description_same').on('change', function(){
             if(this.checked){
@@ -50,6 +50,7 @@ if User.current.allowed_to?(:use_kanbantool, @project)
     %><div class="splitcontentleft">
     <div style="min-width:350px" class="splitcontentleft">
     <p><label for="kanban_project"><span><%= l(:kanban_project) %>:</span></label><%
+    kanban_hide_fields = []
     if !Setting.plugin_kanbantool['kanban_hide_fields'].nil?
         kanban_hide_fields = Setting.plugin_kanbantool['kanban_hide_fields'].split(',')
     end
@@ -64,14 +65,15 @@ if User.current.allowed_to?(:use_kanbantool, @project)
         #swimlanes[ID,Name,Board ID]
         swimlanes = []
         redmine_url = request.protocol + request.host_with_port + request.fullpath
-        redmine_url.slice! 'projects/test/issues/new' %>
-        <input type="text" name="redmine_url" value="<%= redmine_url %>" style="display:none"/>
-        <select autocomplete="off" id="kanban_project" name="kanban_project">
-        <option selected="selected" value="null"><%= l(:choose_project) %></option><%
+        redmine_url.slice! 'projects/test/issues/new'
+        %><input type="text" name="redmine_url" value="<%= redmine_url %>" style="display:none"/>
+        <select autocomplete="off" id="kanban_project" name="kanban_project"><%
         if !Setting.plugin_kanbantool['kanban_board_role'].nil? && Setting.plugin_kanbantool['kanban_board_role'] != ""
              kanban_board_role = JSON.parse(Setting.plugin_kanbantool['kanban_board_role'])
         end
-        doc.xpath('//board').each do |board|
+        boards = doc.xpath('//board')
+        %><option selected="selected" value="null"><%= l(:choose_project) %></option><%
+        boards.each do |board|
             skip = true
             board_id = board.at_xpath("id").content.strip
             if !kanban_board_role.nil?

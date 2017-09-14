@@ -20,4 +20,7 @@ en:
     kanban_description: Kanban description
     kanban_description_same: Use Redmine's description
     board_user_role: User role for board access
-    add_permissions: Add Kanban Tool permission to a user role first  
+    add_permissions: Add Kanban Tool permission to a user role first
+    custom_field_id: Transfer Redmine ID to Kanban custom field
+    choose_custom_field_id: Choose custom field
+    custom_field: Custom field

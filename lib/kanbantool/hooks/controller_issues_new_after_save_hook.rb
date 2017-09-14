@@ -39,6 +39,10 @@ module AddToKanban
                     end 
                 end 
             end
+            custom_field_id = ""
+            if !Setting.plugin_kanbantool['kanban_custom_field_id'].nil?
+                custom_field_id = Setting.plugin_kanbantool['kanban_custom_field_id']
+            end
             if kanban_project != "null" && go_further && User.current.allowed_to?(:use_kanbantool, context[:issue].project)
                 if !Setting.plugin_kanbantool['kanban_hide_fields'].nil? && Setting.plugin_kanbantool['kanban_hide_fields'] != ""
                     kanban_hide_fields = Setting.plugin_kanbantool['kanban_hide_fields'].split(',')
@@ -73,7 +77,7 @@ module AddToKanban
                     "name" => kanban_subject,
                     "description" => kanban_description,
                     "external_link" => redmine_url,
-                    "custom_field_1" => id.to_s,
+                    "custom_field_"+custom_field_id => id.to_s,
                     "api_token" => Setting.plugin_kanbantool['kanban_token']
                 }
                 params = ""

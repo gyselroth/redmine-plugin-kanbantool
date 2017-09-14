@@ -21,3 +21,6 @@ de:
     kanban_description_same: Von Redmine übernehmen
     board_user_role: Benutzerrollen für Board-Zugang
     add_permissions: Zuerst muss einer Benutzerrolle die Kanban Tool Berechtigung zugewiesen werden
+    custom_field_id: Redmine ID in benutzerdefiniertem Feld von Kanban übernehmen
+    choose_custom_field_id: Benutzerdef. Feld auswählen
+    custom_field: Benutzerdefiniertes Feld
