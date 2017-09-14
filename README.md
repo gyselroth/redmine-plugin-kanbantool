@@ -30,7 +30,7 @@ Another way to install the plugin is to download the ZIP file from [here](https:
 To give the plugin access to your Kanban Tool, you first need an API Token. In case you already have one, proceed to step 2.2.
 
 1. Go to the Dashboard of your Kanban Tool website
-2. Open your profile go to API access
+2. Open your profile, then go to API access
 3. Generate an API token
 4. Make sure that your account has access to all the boards you want, as the API token is limited to that
 
