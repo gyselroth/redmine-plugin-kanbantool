@@ -8,14 +8,19 @@ module AddToKanban
             go_further = false;
             if !Setting.plugin_kanbantool['kanban_board_role'].nil? && Setting.plugin_kanbantool['kanban_board_role'] != ""
                 kanban_board_role = JSON.parse(Setting.plugin_kanbantool['kanban_board_role'])
-                User.current.roles_for_project(context[:issue].project).each do |role|
-                    kanban_board_role[kanban_project].each do |board|
-                        if role["id"].to_s == board.to_s
-                            go_further = true
-                            break;
+                roles_for_project = User.current.roles_for_project(context[:issue].project)
+                if !roles_for_project.nil?
+                    roles_for_project.each do |role|
+                        if !kanban_board_role[kanban_project].nil?
+                            kanban_board_role[kanban_project].each do |board|
+                                if role["id"].to_s == board.to_s
+                                    go_further = true
+                                    break;
+                                end
+                            end
                         end
+                        break if go_further
                     end
-                    break if go_further
                 end
             end
             if !Setting.plugin_kanbantool['kanban_hide'].nil? && Setting.plugin_kanbantool['kanban_hide'] != ""
@@ -38,17 +43,19 @@ module AddToKanban
                 if !Setting.plugin_kanbantool['kanban_hide_fields'].nil? && Setting.plugin_kanbantool['kanban_hide_fields'] != ""
                     kanban_hide_fields = Setting.plugin_kanbantool['kanban_hide_fields'].split(',')
                 end
-                if kanban_hide_fields.include? "kanban_subject"
-                    kanban_subject = ""
-                end
-                if kanban_hide_fields.include? "kanban_stage"
-                    kanban_stage = ""
-                end
-                if kanban_hide_fields.include? "kanban_swimlane"
-                    kanban_swimlane = ""
-                end
-                if kanban_hide_fields.include? "kanban_description"
-                    kanban_description = ""
+                if !kanban_hide_fields.nil?
+                    if kanban_hide_fields.include? "kanban_subject"
+                        kanban_subject = ""
+                    end
+                    if kanban_hide_fields.include? "kanban_stage"
+                        kanban_stage = ""
+                    end
+                    if kanban_hide_fields.include? "kanban_swimlane"
+                        kanban_swimlane = ""
+                    end
+                    if kanban_hide_fields.include? "kanban_description"
+                        kanban_description = ""
+                    end
                 end
                 if kanban_subject == "" || kanban_subject.nil?
                     kanban_subject = context[:issue].subject
@@ -66,7 +73,7 @@ module AddToKanban
                     "name" => kanban_subject,
                     "description" => kanban_description,
                     "external_link" => redmine_url,
-                    #FOR FUTURE IF API SUPPORT: "kanban_ticket_id" => kanban_project,
+                    "custom_field_1" => id.to_s,
                     "api_token" => Setting.plugin_kanbantool['kanban_token']
                 }
                 params = ""
