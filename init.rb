@@ -5,7 +5,7 @@ Redmine::Plugin.register :kanbantool do
     name 'Kanban Tool'
     author 'Ewald Kleefstra <kleefstra@gyselroth.com>'
     description 'This plugin connects Kanban Tool with Redmine by letting users choose to automatically add an entry into Kanban Tool when creating a new issue. Go to plugin config to set up'
-    version '1.0.0'
+    version '1.0.1'
     url 'http://www.gyselroth.com'
     author_url 'http://www.gyselroth.com'
     settings :default => {}, :partial => 'settings/kanbantool_settings'
