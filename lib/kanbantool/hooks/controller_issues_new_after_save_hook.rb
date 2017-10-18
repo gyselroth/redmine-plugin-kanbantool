@@ -5,7 +5,7 @@ module AddToKanban
             kanban_stage = context[:params][:kanban_stage]
             kanban_swimlane = context[:params][:kanban_swimlane]
             kanban_subject = context[:params][:kanban_subject]
-            go_further = false;
+            go_further = false
             if !Setting.plugin_kanbantool['kanban_board_role'].nil? && Setting.plugin_kanbantool['kanban_board_role'] != ""
                 kanban_board_role = JSON.parse(Setting.plugin_kanbantool['kanban_board_role'])
                 roles_for_project = User.current.roles_for_project(context[:issue].project)
@@ -15,7 +15,7 @@ module AddToKanban
                             kanban_board_role[kanban_project].each do |board|
                                 if role["id"].to_s == board.to_s
                                     go_further = true
-                                    break;
+                                    break
                                 end
                             end
                         end
@@ -27,7 +27,7 @@ module AddToKanban
                 kanban_hide = Setting.plugin_kanbantool['kanban_hide'].split(',')
                 kanban_hide.each do |hide_id|
                     if kanban_stage == hide_id
-                        go_further = false;
+                        go_further = false
                     end
                 end
             end
@@ -35,7 +35,7 @@ module AddToKanban
                 kanban_hide_lanes = Setting.plugin_kanbantool['kanban_hide_lanes'].split(',')
                 kanban_hide_lanes.each do |hide_id|
                     if kanban_swimlane == hide_id
-                        go_further = false;
+                        go_further = false
                     end 
                 end 
             end
@@ -72,12 +72,12 @@ module AddToKanban
                 redmine_url = context[:params][:redmine_url]
                 redmine_url = redmine_url + "issues/" + id.to_s
                 kanban = {
-                    "workflow_stage_id" => kanban_stage,
-                    "swimlane_id" => kanban_swimlane,
-                    "name" => kanban_subject,
-                    "description" => kanban_description,
-                    "external_link" => redmine_url,
-                    "custom_field_"+custom_field_id => id.to_s,
+                    "task[workflow_stage_id]" => kanban_stage,
+                    "task[swimlane_id]" => kanban_swimlane,
+                    "task[name]" => kanban_subject,
+                    "task[description]" => kanban_description,
+                    "task[external_link]" => redmine_url,
+                    "task[custom_field_"+custom_field_id+"]" => id.to_s,
                     "api_token" => Setting.plugin_kanbantool['kanban_token']
                 }
                 params = ""
@@ -90,7 +90,6 @@ module AddToKanban
                 begin
                     require 'net/http'
                     require 'uri'
-                    require 'json'
                     uri = URI.parse("https://#{Setting.plugin_kanbantool['kanban_domain']}.kanbantool.com/api/v1/boards/#{kanban_project}/tasks.xml")
                     https = Net::HTTP.new(uri.host, uri.port)
                     https.use_ssl = true
