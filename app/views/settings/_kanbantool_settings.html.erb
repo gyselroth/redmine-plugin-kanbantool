@@ -227,6 +227,7 @@ end
 %></tr>
 <tr><td><span>API Token: </span></td><td colspan="<%= counter %>"><input type="text" size="14" id="settings_kanban_token" name="settings[kanban_token]" value="<%= settings['kanban_token'] %>" /><span style="color:red"><%= invalid_token %></span></td></tr>
 <tr><td><span>Domain: </span></td><td colspan="<%= counter %>"><input type="text" size="14" style="text-align:right" id="settings_kanban_domain" name="settings[kanban_domain]" value="<%= settings['kanban_domain'] %>"><span style="vertical-align:middle;">.kanbantool.com</span></td></tr>
+<tr><td><span>Redmine URL:<br>(http://www.my_redmine_url.com)</span></td><td colspan="<%= counter %>"><input type="text" size="40" id="settings_kanban_redmine_url" name="settings[kanban_redmine_url]" value="<%= settings['kanban_redmine_url'] %>" /></td></tr>
 <tr><td style="vertical-align:top"><span><%= l(:hide_fields) %>: </span></td><td colspan="<%= counter %>"><input type="text" id="settings_kanban_hide_fields" name="settings[kanban_hide_fields]" value="<%= settings['kanban_hide_fields'] %>" style="display:none;"/><%
 input_fields = ["kanban_stage","kanban_swimlane","kanban_subject","kanban_description"]
 if !settings['kanban_hide_fields'].nil?

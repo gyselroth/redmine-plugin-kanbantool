@@ -47,6 +47,14 @@ module AddToKanban
                 if !Setting.plugin_kanbantool['kanban_hide_fields'].nil? && Setting.plugin_kanbantool['kanban_hide_fields'] != ""
                     kanban_hide_fields = Setting.plugin_kanbantool['kanban_hide_fields'].split(',')
                 end
+                if !context[:issue].custom_field_values.nil?
+                    context[:issue].custom_field_values.each do |cfv|
+                        if cfv.custom_field.name.downcase.strip == "kanban"
+                            cfv.value = 1
+                            context[:issue].save
+                        end
+                    end
+                end
                 if !kanban_hide_fields.nil?
                     if kanban_hide_fields.include? "kanban_subject"
                         kanban_subject = ""
@@ -69,8 +77,16 @@ module AddToKanban
                     kanban_description = context[:issue].description
                 end
                 id = context[:issue].id
-                redmine_url = context[:params][:redmine_url]
-                redmine_url = redmine_url + "issues/" + id.to_s
+                redmine_url = ""
+                #redmine_url = context[:params][:redmine_url]
+                if !Setting.plugin_kanbantool['kanban_redmine_url'].nil? && Setting.plugin_kanbantool['kanban_redmine_url'].strip != ""
+                    redmine_url = Setting.plugin_kanbantool['kanban_redmine_url']
+                    if redmine_url[-1] == "/"
+                        redmine_url = redmine_url.chomp("/")
+                    end
+                    redmine_url = redmine_url + "/issues/" + id.to_s
+                
+                end
                 kanban = {
                     "task[workflow_stage_id]" => kanban_stage,
                     "task[swimlane_id]" => kanban_swimlane,
