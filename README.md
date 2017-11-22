@@ -2,7 +2,7 @@ Kanban Tool Plugin
 ==================
 Description
 -----------
-A Redmine plugin which connecting kanbantool.com with Redmine by letting users choose to automatically add an entry into Kanban Tool when creating a new issue.
+A Redmine plugin connecting kanbantool.com with Redmine by letting users choose to automatically add an entry into Kanban Tool when creating a new issue.
 
 Features
 --------
