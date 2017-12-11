@@ -2,7 +2,7 @@ Kanban Tool Plugin
 ==================
 Description
 -----------
-A Redmine plugin connecting kanbantool.com with Redmine by letting users choose to automatically add an entry into Kanban Tool when creating a new issue.
+A Redmine plugin connecting kanbantool.com with Redmine lets users choose to automatically add an entry into Kanban Tool when creating a new issue.
 
 Features
 --------
@@ -29,19 +29,19 @@ Another way to install the plugin is to download the ZIP file from [here](https:
 #### 2.1 Creating an API Token
 To give the plugin access to your Kanban Tool, you first need an API Token. In case you already have one, proceed to step 2.2.
 
-1. Go to the Dashboard of your Kanban Tool website
+1. Go to the dashboard of your Kanban Tool Website
 2. Open your profile, then go to API access
 3. Generate an API token
 4. Make sure that your account has access to all the boards you want, as the API token will limit the plugin's access to these boards
 
 #### 2.2 Entering API Token & Domain
-1. Go to Administration page of your Redmine installation
+1. Go to the administration page of your Redmine installation
 2. Then to ``` Plugins > Kanban Tool > Configure ``` to access the plugin's settings page
 3. Enter the API Token and domain of your Kanban Tool
 4. Having made your changes, all your boards will be loaded into the plugin's settings page
 
 #### 2.3 Hiding Stages/Swimlanes
-To hide stages and swimlanes, simply check the boxes next to them. They will not appear on the ``` New issue ``` page of Redmine and can not be used anymore.
+To hide stages and swimlanes, simply check the boxes next to them. They will not appear on the ``` New issue ``` page of Redmine and cannot be used anymore.
 
 #### 2.4 User Role for Board Access
 Each board can be assigned to multiple user roles. However, the roles need to have the ``` Kanban Tool ``` permission. See 3.2 on how to set up. Roles with this permission will appear in the plugin's settings page. Once assigned, only users with the allowed user role will have the option to create a ticket in the respective board.
@@ -49,8 +49,8 @@ Each board can be assigned to multiple user roles. However, the roles need to ha
 #### 2.5 Hiding Input Fields
 To hide an input field, follow the same procedure as 2.3.
 - As a Kanban title is necessary in order to create a new Kanban entry, the title of the Redmine ticket will be used if hidden.
-- If the ``` Kanban stage ``` field is hidden, a new Kanban entry will be placed in the most left of the corresponding Kanban board.
-- If the ```Kanban swimlane ``` field is hidden, a new Kanban entry will be placed in the top of the corresponding Kanban board.
+- If the ``` Kanban stage ``` field is hidden, a new Kanban entry will be placed on the very left of the corresponding Kanban board.
+- If the ```Kanban swimlane ``` field is hidden, a new Kanban entry will be placed above the corresponding Kanban board.
 - If ``` Kanban stage ``` and ```Kanban swimlane ``` are hidden, a new Kanban entry appears in the top left corner.
 
 ### 3. Using Kanban Tool Plugin
